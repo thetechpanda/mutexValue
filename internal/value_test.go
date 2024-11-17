@@ -1,7 +1,6 @@
 package internal_test
 
 import (
-	"fmt"
 	"reflect"
 	"sync"
 	"testing"
@@ -275,8 +274,7 @@ func TestValueConcurrency(t *testing.T) {
 	wg.Wait()
 
 	// Check if the value is now the string "0"
-	v, ok := m.Load()
-	fmt.Println("value=", v, "ok=", ok)
+	_, _ = m.Load()
 }
 
 func TestValueClear(t *testing.T) {

@@ -101,3 +101,118 @@ func TestMap(t *testing.T) {
 		}
 	})
 }
+
+func TestSlice(t *testing.T) {
+	t.Run("new without value (append, shift)", func(t *testing.T) {
+		mv := mutex.NewSlice[string]()
+		if len(mv.Load()) > 0 {
+			t.Errorf("Expected ok to be false, got true")
+		}
+		mv.Append("41", "42")
+		v, ok := mv.Shift()
+		if !ok {
+			t.Errorf("Expected ok to be true, got false")
+		}
+		if v != "41" {
+			t.Errorf("Expected value to be 41, got %v", v)
+		}
+		v, ok = mv.Shift()
+		if !ok {
+			t.Errorf("Expected ok to be true, got false")
+		}
+		if v != "42" {
+			t.Errorf("Expected value to be 42, got %v", v)
+		}
+
+	})
+
+	t.Run("new without value (prepend, pop)", func(t *testing.T) {
+		mv := mutex.NewSlice[string]()
+		if len(mv.Load()) > 0 {
+			t.Errorf("Expected ok to be false, got true")
+		}
+		mv.Prepend("42", "41")
+		v, ok := mv.Pop()
+		if !ok {
+			t.Errorf("Expected ok to be true, got false")
+		}
+		if v != "41" {
+			t.Errorf("Expected value to be 41, got %v", v)
+		}
+		v, ok = mv.Pop()
+		if !ok {
+			t.Errorf("Expected ok to be true, got false")
+		}
+		if v != "42" {
+			t.Errorf("Expected value to be 42, got %v", v)
+		}
+
+	})
+
+	t.Run("new with value", func(t *testing.T) {
+		m := []string{"41", "42"}
+		mv := mutex.NewSliceWithValue(m)
+		v, ok := mv.Shift()
+		if !ok {
+			t.Errorf("Expected ok to be true, got false")
+		}
+		if v != "41" {
+			t.Errorf("Expected value to be 41, got %v", v)
+		}
+
+		v, ok = mv.Pop()
+		if !ok {
+			t.Errorf("Expected ok to be true, got false")
+		}
+		if v != "42" {
+			t.Errorf("Expected value to be 42, got %v", v)
+		}
+
+	})
+	t.Run("new any", func(t *testing.T) {
+		m := []string{"41", "42"}
+		mv := mutex.NewSliceAny[string]()
+		mv.Store(m)
+		v, ok := mv.Shift()
+		if !ok {
+			t.Errorf("Expected ok to be true, got false")
+		}
+		if v != "41" {
+			t.Errorf("Expected value to be 41, got %v", v)
+		}
+
+		v, ok = mv.Pop()
+		if !ok {
+			t.Errorf("Expected ok to be true, got false")
+		}
+		if v != "42" {
+			t.Errorf("Expected value to be 42, got %v", v)
+		}
+
+	})
+	t.Run("new any with value", func(t *testing.T) {
+		mv := mutex.NewSliceAnyWithValue([]string{"41", "42"})
+		v, ok := mv.Shift()
+		if !ok {
+			t.Errorf("Expected ok to be true, got false")
+		}
+		if v != "41" {
+			t.Errorf("Expected value to be 41, got %v", v)
+		}
+
+		v, ok = mv.Pop()
+		if !ok {
+			t.Errorf("Expected ok to be true, got false")
+		}
+		if v != "42" {
+			t.Errorf("Expected value to be 42, got %v", v)
+		}
+
+	})
+}
+
+func TestEquals(t *testing.T) {
+	if mutex.Equals("A", "B") {
+		t.Error("A should not match B")
+	}
+}

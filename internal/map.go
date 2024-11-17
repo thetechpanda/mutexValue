@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"reflect"
 	"sync"
 )
 
@@ -84,12 +83,12 @@ func (m *Map[K, V]) Swap(key K, value V) (previous V, loaded bool) {
 //
 // Returns true if the swap was performed.
 //
-// ! this function uses reflect.DeepEqual to compare the values.
+// ! this function uses reflect.DeepEqual if E isn't comparable and does not implement any comparable interface handled by Equals(a,b T) bool
 func (m *Map[K, V]) CompareAndSwap(key K, old, new V) bool {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	v, ok := m.data[key]
-	if !ok || !reflect.DeepEqual(v, old) {
+	if !ok || !Equals(v, old) {
 		return false
 	}
 	m.data[key] = new
@@ -101,12 +100,12 @@ func (m *Map[K, V]) CompareAndSwap(key K, old, new V) bool {
 // If there is no current value for key in the map, CompareAndDelete
 // returns false (even if the old value is the nil interface value).
 //
-// ! this function uses reflect.DeepEqual to compare the values.
+// ! this function uses reflect.DeepEqual if E isn't comparable and does not implement any comparable interface handled by Equals(a,b T) bool
 func (m *Map[K, V]) CompareAndDelete(key K, old V) (deleted bool) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	v, ok := m.data[key]
-	if !ok || !reflect.DeepEqual(v, old) {
+	if !ok || !Equals(v, old) {
 		return false
 	}
 	delete(m.data, key)

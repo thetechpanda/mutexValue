@@ -27,7 +27,7 @@ type Value[V any] interface {
 	//
 	// Returns true if the swap was performed.
 	//
-	// ! this function uses reflect.DeepEqual to compare the values.
+	// ! this function uses reflect.DeepEqual if E isn't comparable and does not implement any comparable interface handled by Equals(a,b T) bool
 	CompareAndSwap(old, new V) bool
 	// return true if the value is a zero value (not set)
 	IsZero() bool
